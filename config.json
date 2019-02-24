@@ -1,5 +1,6 @@
 {
     "format": "mp4",
+    "useAria2": true,
     "host": "http://localhost",
     "port": 6810,
     "secret": "enter"

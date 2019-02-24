@@ -69,19 +69,20 @@ def download(url, name, filetype):
     if os.path.exists(filepath):
         logger.info('this file had been downloaded :: %s' % filepath)
         return
-
-
-    aria2 = aria2p.API(
-        aria2p.Client(
-            host=conf["host"],
-            port=conf["port"],
-            secret=conf["secret"]
+    if conf["useAria2"] == True:
+        aria2 = aria2p.API(
+            aria2p.Client(
+                host=conf["host"],
+                port=conf["port"],
+                secret=conf["secret"]
+            )
         )
-    )
-    aria2.add_uris([url], options={
-        "out": '%s.%s' % (name, filetype),
-        "dir": '%s/%s' % (os.getcwd(), filetype)
-    })
+        aria2.add_uris([url], options={
+            "out": '%s.%s' % (name, filetype),
+            "dir": '%s/%s' % (os.getcwd(), filetype)
+        })
+    else:
+        urllib.request.urlretrieve(url, '%s' % filepath)
     logger.info('download success :: %s' % filepath)
 
 
