@@ -1,0 +1,6 @@
+{
+    "format": "mp4",
+    "host": "http://localhost",
+    "port": 6810,
+    "secret": "enter"
+}

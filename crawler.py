@@ -10,17 +10,13 @@ import multiprocessing
 import requests
 from lxml import etree
 import fire
+import aria2p
+import json
 from loguru import logger
 logger.add("logs/%s.log" % __file__.rstrip('.py'), format="{time:MM-DD HH:mm:ss} {level} {message}")
 
-import aria2p
-aria2 = aria2p.API(
-    aria2p.Client(
-        host="http://localhost",
-        port=6810,
-        secret="enter"
-    )
-)
+with open('config.json') as f:
+    conf = json.load(f)
 
 headers = {
     'User-Agent':
@@ -73,6 +69,15 @@ def download(url, name, filetype):
     if os.path.exists(filepath):
         logger.info('this file had been downloaded :: %s' % filepath)
         return
+
+
+    aria2 = aria2p.API(
+        aria2p.Client(
+            host=conf["host"],
+            port=conf["port"],
+            secret=conf["secret"]
+        )
+    )
     aria2.add_uris([url], options={
         "out": '%s.%s' % (name, filetype),
         "dir": '%s/%s' % (os.getcwd(), filetype)
@@ -85,7 +90,7 @@ def run(_arg=None):
     for path in paths:
         if not os.path.exists(path):
             os.mkdir(path)
-    if _arg == 'webm':
+    if conf["format"] == 'webm':
         # https://www.pornhub.com/categories
         urls = [
             'https://www.pornhub.com/video?o=tr',
@@ -98,9 +103,12 @@ def run(_arg=None):
         for url in urls:
             p = multiprocessing.Process(target=list_page, args=(url, ))
             p.start()
-    elif _arg == 'mp4':
-        with open('download.txt', 'r') as file:
-            keys = list(set(file.readlines()))
+    elif conf["format"] == 'mp4':
+        if _arg == None:
+            with open('download.txt', 'r') as file:
+                keys = list(set(file.readlines()))
+        else:
+            keys = [_arg]
         # jobs = []
         for key in keys:
             if not key.strip():
