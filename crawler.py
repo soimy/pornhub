@@ -13,11 +13,19 @@ import fire
 from loguru import logger
 logger.add("logs/%s.log" % __file__.rstrip('.py'), format="{time:MM-DD HH:mm:ss} {level} {message}")
 
+import aria2p
+aria2 = aria2p.API(
+    aria2p.Client(
+        host="http://localhost",
+        port=6810,
+        secret="enter"
+    )
+)
+
 headers = {
     'User-Agent':
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36',
 }
-
 
 def list_page(url):
     logger.info('crawling : %s' % url)
@@ -65,7 +73,10 @@ def download(url, name, filetype):
     if os.path.exists(filepath):
         logger.info('this file had been downloaded :: %s' % filepath)
         return
-    urllib.request.urlretrieve(url, '%s' % filepath)
+    aria2.add_uris([url], options={
+        "out": '%s.%s' % (name, filetype),
+        "dir": '%s/%s' % (os.getcwd(), filetype)
+    })
     logger.info('download success :: %s' % filepath)
 
 
