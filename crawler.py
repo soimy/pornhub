@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # coding=utf-8
 
 import os
@@ -81,9 +81,10 @@ def download(url, name, filetype):
             "out": '%s.%s' % (name, filetype),
             "dir": '%s/%s' % (os.getcwd(), filetype)
         })
+        logger.info('Aria2 queued :: %s' % filepath)
     else:
         urllib.request.urlretrieve(url, '%s' % filepath)
-    logger.info('download success :: %s' % filepath)
+        logger.info('Download success :: %s' % filepath)
 
 
 def run(_arg=None):
